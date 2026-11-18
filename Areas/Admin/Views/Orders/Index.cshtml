@@ -1,0 +1,80 @@
+﻿@model TheThao247.Models.OrderSearchVM
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Danh sách đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@using (Html.BeginForm("Index", "Orders", FormMethod.Get, new { @class = "row g-3 align-items-end mb-4" }))
+{
+    <div class="col-md-3">
+        <label class="form-label">Tên khách hàng</label>
+        <input type="text" name="searchCustomerName" value="@Model.SearchCustomerName" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Trạng thái thanh toán</label>
+        <select name="searchPaymentStatus" class="form-select">
+            <option value="">-- Tất cả --</option>
+            <option value="Chưa thanh toán" @(Model.SearchPaymentStatus == "Chưa thanh toán" ? "selected" : "")>Chưa thanh toán</option>
+            <option value="Thanh toán tiền mặt" @(Model.SearchPaymentStatus == "Thanh toán tiền mặt" ? "selected" : "")>Thanh toán tiền mặt</option>
+            <option value="Đã thanh toán" @(Model.SearchPaymentStatus == "Đã thanh toán" ? "selected" : "")>Đã thanh toán</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Ngày đặt hàng</label>
+        <input type="date" name="searchOrderDate" value="@(Model.SearchOrderDate.HasValue ? Model.SearchOrderDate.Value.ToString("yyyy-MM-dd") : "")" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary px-4">Tìm kiếm</button>
+    </div>
+}
+
+<div class="p-2" style="background-color: #dff0d8;">
+    <h3 class="m-0">DANH SÁCH ĐƠN HÀNG</h3>
+</div>
+
+@if (Model.Orders == null || !Model.Orders.Any())
+{
+    <div class="alert alert-warning mt-3 fw-bold">KHÔNG CÓ</div>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead style="background-color: #dff0d8;">
+            <tr>
+                <th>Ngày đặt hàng</th>
+                <th>Tên khách hàng</th>
+                <th>Tổng giá trị</th>
+                <th>Trạng thái thanh toán</th>
+                <th>Phương thức giao hàng</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Orders)
+            {
+                <tr>
+                    <td>@item.OrderDate</td>
+                    <td>@(item.Customer != null ? item.Customer.CustomerName : "")</td>
+                    <td>@item.TotalAmount.ToString("0.00")</td>
+                    <td>@item.PaymentStatus</td>
+                    <td>@item.DeliveryMethod</td>
+                    <td>
+                        @Html.ActionLink("Chi tiết đơn hàng", "DetailedOrder", new { id = item.OrderID })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div>
+        @Html.PagedListPager(Model.Orders, page => Url.Action("Index", new
+        {
+            page,
+            searchCustomerName = Model.SearchCustomerName,
+            searchPaymentStatus = Model.SearchPaymentStatus,
+            searchOrderDate = Model.SearchOrderDate.HasValue ? Model.SearchOrderDate.Value.ToString("yyyy-MM-dd") : null
+        }))
+    </div>
+}

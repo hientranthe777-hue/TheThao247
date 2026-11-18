@@ -1,0 +1,80 @@
+﻿@model TheThao247.Models.Order
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="mb-4">CHI TIẾT ĐƠN HÀNG</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <h6 class="text-secondary">THÔNG TIN ĐƠN HÀNG</h6>
+        <table class="table table-borderless table-sm">
+            <tr>
+                <th class="text-end" style="width:45%;">Ngày đặt hàng</th>
+                <td>@Model.OrderDate</td>
+            </tr>
+            <tr>
+                <th class="text-end">Tên khách hàng</th>
+                <td>@(Model.Customer != null ? Model.Customer.CustomerName : "")</td>
+            </tr>
+            <tr>
+                <th class="text-end">Tổng giá trị</th>
+                <td>@Model.TotalAmount.ToString("0.00")</td>
+            </tr>
+            <tr>
+                <th class="text-end">Phương thức thanh toán</th>
+                <td>@Model.PaymentMethod</td>
+            </tr>
+            <tr>
+                <th class="text-end">Trạng thái thanh toán</th>
+                <td>@Model.PaymentStatus</td>
+            </tr>
+            <tr>
+                <th class="text-end">Phương thức giao hàng</th>
+                <td>@Model.DeliveryMethod</td>
+            </tr>
+            <tr>
+                <th class="text-end">Địa chỉ giao hàng</th>
+                <td>@Model.AddressDelivery</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-md-8">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan="2">Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Đơn giá</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderDetails)
+                {
+                    var thanhTien = item.Quantity * item.UnitPrice;
+                    <tr>
+                        <td style="width:110px;">
+                            @if (item.Product != null && !string.IsNullOrEmpty(item.Product.ProductImage))
+                            {
+                                <img src="@item.Product.ProductImage" class="img-fluid" style="max-height:120px;" />
+                            }
+                        </td>
+                        <td>@(item.Product != null ? item.Product.ProductName : "")</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.UnitPrice.ToString("N0")</td>
+                        <td>@thanhTien.ToString("0")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    @Html.ActionLink("Cập nhật trạng thái", "Edit", new { id = Model.OrderID }, new { @class = "btn btn-primary me-2" })
+    @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-primary" })
+</div>

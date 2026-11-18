@@ -1,0 +1,43 @@
+﻿@model TheThao247.Models.Order
+
+@{
+    ViewBag.Title = "Cập nhật trạng thái đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3 class="mb-4">CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG #@Model.OrderID</h3>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <!-- Giữ nguyên các thông tin gốc của đơn hàng -->
+    @Html.HiddenFor(m => m.OrderID)
+    @Html.HiddenFor(m => m.CustomerID)
+    @Html.HiddenFor(m => m.OrderDate)
+    @Html.HiddenFor(m => m.TotalAmount)
+    @Html.HiddenFor(m => m.PaymentMethod)
+    @Html.HiddenFor(m => m.AddressDelivery)
+
+    <div class="mb-3 col-md-5">
+        <label class="form-label fw-bold">Trạng thái thanh toán</label>
+        <select name="PaymentStatus" class="form-select">
+            <option value="Chưa thanh toán" @(Model.PaymentStatus == "Chưa thanh toán" ? "selected" : "")>Chưa thanh toán</option>
+            <option value="Thanh toán tiền mặt" @(Model.PaymentStatus == "Thanh toán tiền mặt" ? "selected" : "")>Thanh toán tiền mặt</option>
+            <option value="Đã thanh toán" @(Model.PaymentStatus == "Đã thanh toán" ? "selected" : "")>Đã thanh toán</option>
+        </select>
+    </div>
+
+    <div class="mb-3 col-md-5">
+        <label class="form-label fw-bold">Phương thức giao hàng</label>
+        <select name="DeliveryMethod" class="form-select">
+            <option value="Giao hàng nhanh" @(Model.DeliveryMethod == "Giao hàng nhanh" ? "selected" : "")>Giao hàng nhanh</option>
+            <option value="Giao hàng tiết kiệm" @(Model.DeliveryMethod == "Giao hàng tiết kiệm" ? "selected" : "")>Giao hàng tiết kiệm</option>
+        </select>
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-success me-2">Lưu trạng thái</button>
+        @Html.ActionLink("Quay lại chi tiết", "DetailedOrder", new { id = Model.OrderID }, new { @class = "btn btn-secondary" })
+    </div>
+}
